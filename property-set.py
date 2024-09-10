@@ -1,4 +1,4 @@
-# PROPERTY / SETTER
+# PROPERTY / SETTER Aula 05
 
 class Retangulo:
     def __init__(self, largura, altura):

@@ -1,4 +1,4 @@
-# COMANDO WHILE Criar laços indeterminadamente
+# COMANDO WHILE Criar laços indeterminadamente - Aula 02
 '''for c in range(1, 10):
     print (c)
 print('FIM')    

@@ -1,4 +1,4 @@
-# Metodos GETTER e SETTER
+# Metodos GETTER e SETTER - Aula 05
 
 class Pessoa:
     def __init__(self, idade_inicial):

@@ -1,4 +1,4 @@
-# HERANÇA
+# HERANÇA Aula 06
 # classe mãe(superclasse):
 class veiculo:
     def __init__ (self, marca, modelo, placa):
