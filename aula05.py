@@ -1,4 +1,4 @@
-''' Usando métodos publicos protegidos e privados'''
+# Usando métodos publicos protegidos e privados
 
 class Exemplo:
     def __init__(self):
