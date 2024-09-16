@@ -22,7 +22,7 @@ class Lampada:
         self._estado = print("Valor invalido! O estado deve ser 'Ligado' ou 'Desligado'")
 
 
-lampada = Lampada("Ligadsds")
+lampada = Lampada("Ligado")
 print(lampada.get_estado())             
 
 
