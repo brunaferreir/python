@@ -23,6 +23,11 @@ class Lampada:
 
 
 lampada = Lampada("Ligado")
-print(lampada.get_estado())             
+print(lampada.get_estado())
+
+lampada.set_estado("Desligado")
+print(lampada.get_estado())
+
+
 
 
