@@ -22,8 +22,7 @@ class controleRemoto:
 
     def __set_atualVolume(self, volume):
         self.vol = volume
-
-
+        
 controle = controleRemoto("Estado: deligado", f'volume: {50}') #GET BUSCA
 print(controle._controleRemoto__get_ligdeslig())
 controle._controleRemoto__set_ligdeslig("Estado: ligado") #SET ALTERA 
