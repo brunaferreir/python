@@ -1,19 +1,19 @@
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, Float, Date
 from sqlalchemy.orm import relationship, sessionmaker, declarative_base
-from datetime import date, timedelta
+from datetime import date, timedelta   #permite trabalhar com datas e horarios.
+from sqlalchemy import delete
 
-
-#criação e conexão do banco de dados com POO
+#criando o motor do banco de dados criação e conexão do banco de dados com POO.
 engine = create_engine('sqlite:///locadora.db')
-Session = sessionmaker(bind=engine)
+Session = sessionmaker(bind=engine)  #Uma sessão é como uma transação, onde você pode executar várias operações antes de confirmar as mudanças no banco de dados.  
 session = Session()
 
-Base = declarative_base()
+Base = declarative_base()   #Define uma classe base para todas as classes que representam tabelas no banco de dados.
 
 class Diretor(Base):
-    __tablename__ = 'diretores'
-    
-    id = Column(Integer, primary_key=True)
+    __tablename__ = 'diretores'   #Define o nome da tabela no banco de dados como "diretores".
+
+    id = Column(Integer, primary_key=True) #Coluna de chave primária, um número inteiro único para cada diretor.
     nome = Column(String)
     nacionalidade = Column(String)
 
@@ -24,16 +24,18 @@ class Filme(Base):
     __tablename__ = 'filmes'
      
     id = Column(Integer, primary_key=True)
-    titulo = Column(String)
-    anoLancamento = Column(Integer)
+    titulo = Column(String) 
+    anoLancamento = Column(Integer)  #indica que uma coluna em uma tabela de banco de dados armazenará valores numéricos inteiros.
     qtdDisponivel = Column(Integer)
-    diretor_id = Column(Integer, ForeignKey('diretores.id'))
-    diretor = relationship('Diretor', backref='filmes')
+    diretor_id = Column(Integer, ForeignKey('diretores.id'))   # é uma chave estrangeira.
+    diretor = relationship('Diretor', backref='filmes')  #Define um relacionamento entre as classes Filme e Diretor. relationsh 
+    #( 'Diretor', backref='filmes'): O primeiro argumento ('Diretor') especifica a classe relacionada, que é Diretor neste caso.
+    #O argumento backref='filmes' cria uma referência inversa na classe Diretor. Isso significa que cada objeto Diretor terá uma #propriedade filmes que conterá uma lista de objetos Filme associados a ele.
 
     def __repr__(self):
         return f'Filme: (titulo={self.titulo}, diretor={self.diretor.nome})'
 
-    
+
 class Locacao(Base):
     __tablename__ = 'locação'
     
@@ -72,25 +74,33 @@ class Multa(Base):
     cliente_cpf = Column(Integer, ForeignKey('clientes.cpf'))
     cliente = relationship('Cliente', backref='multas')
     
-# Criação das tabelas no banco de dados
+# Criar todas as tabelas definidas  nas classes que herdam de BASE no banco de dados engine.
 Base.metadata.create_all(engine)
 
-def adicionar_diretor(nome, nacionalidade):
+def adicionar_diretor(nome, nacionalidade):   
     diretor = session.query(Diretor).filter_by(nome=nome).first()
     if not diretor:
         diretor = Diretor(nome=nome, nacionalidade = nacionalidade)
         session.add(diretor)
         session.commit()
 
-def adicionar_filme(titulo, anoLancamento, diretor, qtdDisponivel):
-    diretor = session.query(Diretor).filter_by(nome=diretor).first()
-    if not diretor:
-        print(f"diretor: {diretor}, não foi encontrado")
-        return
+
+def excluir_diretor(id_diretor):
     
-    filme = Filme(titulo=titulo, anoLancamento=anoLancamento, diretor=diretor, qtdDisponivel=qtdDisponivel)
-    session.add(filme)
+    stmt = delete(Diretor).where(Diretor.id == id_diretor)
+
+    session.execute(stmt)
     session.commit()
+
+def adicionar_filme(titulo, anoLancamento, diretor, qtdDisponivel):
+     diretor = session.query(Diretor).filter_by(nome=diretor).first()
+     if not diretor:
+         print(f"diretor: {diretor}, nao foi encontrado")
+         return
+    
+     filme = Filme(titulo=titulo, anoLancamento=anoLancamento, diretor=diretor, qtdDisponivel=qtdDisponivel)
+     session.add(filme)
+     session.commit()
 
 def cadastrar_cliente(nome, cpf, dataNasc, sexo):
     cliente = session.query(Cliente).filter_by(cpf=cpf).first()
@@ -101,6 +111,21 @@ def cadastrar_cliente(nome, cpf, dataNasc, sexo):
     cliente = Cliente(nome=nome, cpf=cpf, dataNasc=dataNasc, sexo=sexo)
     session.add(cliente)
     session.commit()
+
+
+def excluir_cliente(cpf):
+    try:
+        stmt = delete(Cliente).where(Cliente.cpf == cpf)
+
+        session.execute(stmt, {'cpf': cpf})
+        session.commit()
+
+        print(f"Cliente com CPF {cpf} excluído com sucesso.")
+
+    except Exception as e:
+        print(f"Erro ao excluir cliente com CPF {cpf}: {str(e)}")
+
+
 
 def fazer_locacao(nomeFilme, cpf):
     filme = session.query(Filme).filter_by(titulo=nomeFilme).first()
@@ -146,17 +171,34 @@ def consulta_locacoes():
 def devolucao(nomeFilme, cpf):
     pass
 
+    
 #adicionar diretor
-# nome = input('Nome do Diretor: ') 
-# nacionalidade = input('nacionalidade do diretor')
-# adicionar_diretor(nome, nacionalidade)
+#nome = input('Nome do Diretor: ') 
+#nacionalidade = input('nacionalidade do diretor: ')
+#adicionar_diretor(nome, nacionalidade)
+
+
+# excluir diretor Solicitando o ID do diretor ao usuário
+#id_diretor_str = input('id Diretor: ')
+#print("excluido com sucesso")
+#try:
+#   id_diretor = int(id_diretor_str)
+#   excluir_diretor(id_diretor)
+#except ValueError:
+#   print("ID do diretor inválido. Por favor, insira um número inteiro.")
+
 
 #adicionar cliente
-# nome= input('Nome: ')
-# cpf = input('cpf: ')
-# dataNasc = input('Data de Nascimento: ')
-# sexo = input('sexo: ')
-# cadastrar_cliente(nome, cpf, dataNasc, sexo)
+#nome= input('Nome do cliente que deseja adicionar: ')
+#cpf = input('cpf: ')
+#dataNasc = input('Data de Nascimento: ')
+#sexo = input('sexo: ')
+#cadastrar_cliente(nome, cpf, dataNasc, sexo)
+
+# #excluir cliente
+# cpf_usuario = input("Digite o CPF do cliente que deseja excluir: ")
+# excluir_cliente(cpf_usuario)
+
 
 # consultar_diretores()
 # titulo = 'barbie'
